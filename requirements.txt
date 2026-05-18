@@ -1,0 +1,29 @@
+# Core
+flask
+flask-cors
+gunicorn
+python-dotenv
+
+# ML / Retrieval
+numpy
+faiss-cpu
+sentence-transformers
+rank-bm25
+huggingface-hub
+google-generativeai
+
+# PyTorch stack
+torch>=2.2.0
+transformers>=4.34.0
+accelerate>=0.24.0
+safetensors>=0.3.0
+sentencepiece
+
+# Data / HTTP
+pandas
+requests
+tqdm
+
+# Evaluation
+beautifulsoup4
+rapidfuzz

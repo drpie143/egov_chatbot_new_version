@@ -1,0 +1,2 @@
+"""Lightweight response schema dataclasses."""
+

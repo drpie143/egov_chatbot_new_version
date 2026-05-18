@@ -1,0 +1,18 @@
+services:
+  egov-bot:
+    build: .
+    container_name: egov-bot
+    ports:
+      - "${PORT:-7860}:${PORT:-7860}"
+    env_file:
+      - .env
+    volumes:
+      - ./user_data:/app/user_data
+      - ./.cache:/app/.cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    restart: unless-stopped

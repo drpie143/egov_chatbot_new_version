@@ -1,0 +1,96 @@
+{
+  "timestamp": "2026-05-17T00:16:37.653277",
+  "testset": "evaluation/testsets/dvc_faq_qa_500.jsonl",
+  "retrieval": {
+    "bm25": {
+      "mode": "bm25",
+      "k": 10,
+      "count": 74,
+      "recall@1": 0.7432,
+      "recall@3": 0.8919,
+      "recall@5": 0.9054,
+      "recall@10": 0.9324,
+      "mrr@10": 0.822,
+      "ndcg@10": 0.8496,
+      "latency_p50_ms": 1321.3,
+      "latency_p95_ms": 3070.1
+    },
+    "dense": {
+      "mode": "dense",
+      "k": 10,
+      "count": 74,
+      "recall@1": 0.8514,
+      "recall@3": 0.9054,
+      "recall@5": 0.9324,
+      "recall@10": 0.9324,
+      "mrr@10": 0.8829,
+      "ndcg@10": 0.8953,
+      "latency_p50_ms": 116.0,
+      "latency_p95_ms": 189.6
+    },
+    "hybrid": {
+      "mode": "hybrid",
+      "k": 10,
+      "count": 74,
+      "recall@1": 0.8514,
+      "recall@3": 0.9054,
+      "recall@5": 0.9324,
+      "recall@10": 0.9459,
+      "mrr@10": 0.882,
+      "ndcg@10": 0.8975,
+      "latency_p50_ms": 1456.1,
+      "latency_p95_ms": 3248.9
+    }
+  },
+  "generation": {
+    "count": 20,
+    "success_rate": 1.0,
+    "source_title_match_rate": 0.9,
+    "judged_count": 13,
+    "answer_correctness_avg": 2.54,
+    "faithfulness_avg": 2.46,
+    "pass_rate": 0.2308,
+    "hallucination_rate": 0.5385,
+    "latency_p50_ms": 9429.6,
+    "latency_p95_ms": 12103.9
+  },
+  "latency": {
+    "count": 74,
+    "errors": 0,
+    "success_rate": 1.0,
+    "latency_min_ms": 3809.9,
+    "latency_mean_ms": 5891.6,
+    "latency_p50_ms": 4819.4,
+    "latency_p90_ms": 9939.7,
+    "latency_p95_ms": 11880.6,
+    "latency_p99_ms": 13017.1,
+    "latency_max_ms": 13017.1,
+    "run_type": "warm"
+  },
+  "steps": [
+    {
+      "name": "validate_testset",
+      "ok": true
+    },
+    {
+      "name": "retrieval_bm25",
+      "ok": true
+    },
+    {
+      "name": "retrieval_dense",
+      "ok": true
+    },
+    {
+      "name": "retrieval_hybrid",
+      "ok": true
+    },
+    {
+      "name": "generation_judge",
+      "ok": true
+    },
+    {
+      "name": "latency",
+      "ok": true
+    }
+  ]
+}

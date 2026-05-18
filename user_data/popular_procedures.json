@@ -1,0 +1,44 @@
+{
+  "popular_procedures": [
+    {
+      "name": "Đăng ký dự thi tốt nghiệp trung học phổ thông",
+      "total_queries": 17
+    },
+    {
+      "name": "Thủ tục đăng ký khai sinh",
+      "total_queries": 15
+    },
+    {
+      "name": "Thủ tục đăng ký kết hôn",
+      "total_queries": 13
+    },
+    {
+      "name": "Hỗ trợ tư vấn, giới thiệu việc làm",
+      "total_queries": 11
+    },
+    {
+      "name": "Thông báo về việc tìm kiếm việc làm hằng tháng",
+      "total_queries": 10
+    },
+    {
+      "name": "Thủ tục đăng ký khai tử (TP Đà Nẵng)",
+      "total_queries": 11
+    },
+    {
+      "name": "Xét tuyển học sinh vào trường dự bị đại học",
+      "total_queries": 8
+    },
+    {
+      "name": "Thủ tục tuyển dụng cán bộ Ngân hàng Chính sách xã hội",
+      "total_queries": 7
+    },
+    {
+      "name": "Giải quyết hưởng trợ cấp thất nghiệp (TP Hồ Chí Minh)",
+      "total_queries": 7
+    },
+    {
+      "name": "Nhập quốc tịch Việt Nam ở nước ngoài",
+      "total_queries": 7
+    }
+  ]
+}
