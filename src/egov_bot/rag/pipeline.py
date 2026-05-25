@@ -75,6 +75,15 @@ class RAGPipeline:
                 result.latency_ms,
                 cached=True,
             )
+            cached_context = self.procedure_store.format_procedure(cached.context_source)
+            self.sessions.append_turn(
+                session_id=session_id,
+                question=question,
+                answer=result.answer,
+                context=cached_context,
+                parent_id=cached.context_source,
+                sources=result.sources,
+            )
             return result
 
         timings: dict[str, int] = {}

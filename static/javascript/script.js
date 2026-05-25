@@ -8,6 +8,7 @@ function makeSessionId() {
 const state = {
   sessionId: localStorage.getItem("egov_session_id") || makeSessionId(),
   lastRequestId: null,
+  isLoading: false,
 };
 
 localStorage.setItem("egov_session_id", state.sessionId);
@@ -175,6 +176,8 @@ async function runSearch(query) {
 }
 
 async function sendChat(question) {
+  if (state.isLoading) return;
+  state.isLoading = true;
   els.sendButton.disabled = true;
   const loading = appendMessage("assistant", "_Đang truy xuất dữ liệu và tạo câu trả lời..._");
   try {
@@ -199,6 +202,7 @@ async function sendChat(question) {
     loading.remove();
     appendMessage("assistant", "Không thể kết nối tới máy chủ. Vui lòng thử lại sau.");
   } finally {
+    state.isLoading = false;
     els.sendButton.disabled = false;
   }
 }
@@ -233,6 +237,7 @@ els.searchForm.addEventListener("submit", (event) => {
 
 els.chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (state.isLoading) return;
   const question = els.chatInput.value.trim();
   if (!question) return;
   if (els.messages.querySelector(".empty-state")) els.messages.innerHTML = "";

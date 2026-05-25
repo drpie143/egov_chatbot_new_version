@@ -1,4 +1,4 @@
-from egov_bot.app import create_test_app
+from egov_bot.app import create_app, create_test_app
 from egov_bot.config import Settings
 
 
@@ -34,3 +34,16 @@ def test_feedback_contract(tmp_path):
     assert response.status_code == 200
     assert response.get_json()["summary"]["likes"] == 1
 
+
+def test_user_data_route_does_not_expose_sqlite_db(tmp_path):
+    settings = Settings(
+        cache_dir=tmp_path,
+        data_dir=tmp_path,
+        sqlite_path=tmp_path / "test.db",
+        data_source="local",
+    )
+    app = create_app(settings=settings, load_model_resources=False)
+    client = app.test_client()
+
+    response = client.get("/user_data/egov_bot.db")
+    assert response.status_code == 404

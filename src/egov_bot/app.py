@@ -19,6 +19,7 @@ from egov_bot.storage.db import Database
 from egov_bot.storage.repositories import AppRepository
 
 logger = logging.getLogger(__name__)
+PUBLIC_USER_DATA_FILES = {"popular_procedures.json"}
 
 
 def create_app(settings: Settings | None = None, load_model_resources: bool = True) -> Flask:
@@ -73,6 +74,8 @@ def create_app(settings: Settings | None = None, load_model_resources: bool = Tr
 
     @app.get("/user_data/<path:filename>")
     def user_data_files(filename: str):
+        if filename not in PUBLIC_USER_DATA_FILES:
+            abort(404)
         user_data_dir = Path.cwd() / "user_data"
         requested_path = (user_data_dir / filename).resolve()
         root = user_data_dir.resolve()
@@ -121,4 +124,3 @@ def create_test_app(settings: Settings | None = None, resources: Resources | Non
     app.extensions["egov_pipeline"] = pipeline
     register_blueprints(app)
     return app
-
