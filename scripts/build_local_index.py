@@ -59,8 +59,9 @@ def main() -> None:
     texts = [chunk["text"] for chunk in chunks]
 
     import faiss
-    from rank_bm25 import BM25Okapi
     from sentence_transformers import SentenceTransformer
+
+    from egov_bot.retrieval.sparse_index import SparseIndex
 
     model = SentenceTransformer(args.embedding_model)
     embeddings = model.encode(texts, convert_to_numpy=True, normalize_embeddings=True, show_progress_bar=True).astype(
@@ -72,8 +73,7 @@ def main() -> None:
     faiss.write_index(index, str(output_dir / "index.faiss"))
     with gzip.open(output_dir / "metas.pkl.gz", "wb") as file:
         pickle.dump({"corpus": chunks}, file)
-    with gzip.open(output_dir / "bm25.pkl.gz", "wb") as file:
-        pickle.dump(BM25Okapi([text.split() for text in texts]), file)
+    SparseIndex.build(texts).save(output_dir / "bm25.pkl.gz")
     (output_dir / "toan_bo_du_lieu_final.json").write_text(json.dumps(records, ensure_ascii=False), encoding="utf-8")
 
     print(f"Built {len(chunks)} chunks into {output_dir}")

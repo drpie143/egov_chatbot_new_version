@@ -6,8 +6,12 @@ python-dotenv
 
 # ML / Retrieval
 numpy
+scipy
 faiss-cpu
 sentence-transformers
+bm25s
+# rank-bm25 is only needed to load sparse indexes published before the
+# tokenizer fix; new indexes are built with bm25s.
 rank-bm25
 huggingface-hub
 google-generativeai
