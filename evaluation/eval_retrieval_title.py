@@ -5,7 +5,7 @@ appears in the top-k retrieval results.
 
 Usage:
     python evaluation/eval_retrieval_title.py \
-        --testset evaluation/testsets/dvc_faq_qa_500.jsonl \
+        --testset evaluation/testsets/dvc_faq_clean_v2.jsonl \
         --output evaluation/reports/faq_retrieval_metrics.json \
         --per-sample-output evaluation/reports/faq_retrieval_per_sample.jsonl \
         --k 10 \
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import math
+import os
 import sys
 import time
 from pathlib import Path
@@ -127,12 +128,30 @@ def evaluate(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Retrieval evaluation with title matching.")
-    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_qa_500.jsonl")
+    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_clean_v2.jsonl")
     parser.add_argument("--output", default="evaluation/reports/faq_retrieval_metrics.json")
     parser.add_argument("--per-sample-output", default="evaluation/reports/faq_retrieval_per_sample.jsonl")
     parser.add_argument("--k", type=int, default=10)
     parser.add_argument("--mode", choices=["bm25", "dense", "hybrid"], default="hybrid")
+    parser.add_argument(
+        "--fusion",
+        choices=["rrf", "weighted", "legacy"],
+        default=None,
+        help="Override FUSION_STRATEGY for this run (hybrid mode only).",
+    )
+    parser.add_argument(
+        "--group",
+        dest="group",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Override GROUP_BY_PROCEDURE (collapse chunks to their parent procedure).",
+    )
     args = parser.parse_args()
+
+    if args.fusion:
+        os.environ["FUSION_STRATEGY"] = args.fusion
+    if args.group is not None:
+        os.environ["GROUP_BY_PROCEDURE"] = "true" if args.group else "false"
 
     load_dotenv(ROOT / ".env")
     settings = load_settings()
@@ -153,6 +172,8 @@ def main() -> None:
     print()
 
     metrics, per_sample = evaluate(samples, retriever, args.k, args.mode)
+    if args.mode == "hybrid":
+        metrics["fusion"] = settings.fusion_strategy
 
     write_json(args.output, metrics)
     write_jsonl(args.per_sample_output, per_sample)
