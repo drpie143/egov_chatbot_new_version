@@ -55,9 +55,16 @@ def fuzzy_match(
     """
     try:
         from rapidfuzz import fuzz, process
-    except ImportError:
-        logger.warning("rapidfuzz is not installed; fuzzy matching is disabled.")
-        return None, 0.0
+    except ImportError as exc:  # pragma: no cover - environment error
+        # This used to warn and return no match. Because the caller treats "no
+        # match" as "drop this sample", a missing dependency silently shrank the
+        # test set to only those questions that quote a procedure title
+        # verbatim, which inflated every retrieval metric computed from it.
+        raise RuntimeError(
+            "rapidfuzz is required for fuzzy title matching but is not installed. "
+            "Without it the cleaned test set silently loses every non-exact match. "
+            "Install it with: pip install rapidfuzz"
+        ) from exc
 
     key = normalize_title(expected_title)
     candidates = list(title_map.keys())
