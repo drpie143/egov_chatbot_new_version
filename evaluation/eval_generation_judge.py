@@ -6,7 +6,7 @@ answer correctness, faithfulness, and hallucination against the reference answer
 Usage:
     python evaluation/eval_generation_judge.py \
         --base-url http://localhost:7860 \
-        --testset evaluation/testsets/dvc_faq_qa_500.jsonl \
+        --testset evaluation/testsets/dvc_faq_clean_v2.jsonl \
         --output evaluation/reports/faq_generation_metrics.json \
         --per-sample-output evaluation/reports/faq_generation_per_sample.jsonl \
         --limit 100 \
@@ -142,7 +142,7 @@ def _source_title_match(sources: list[dict], expected_title: str) -> bool:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generation evaluation with LLM-as-judge.")
     parser.add_argument("--base-url", default="http://localhost:7860")
-    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_qa_500.jsonl")
+    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_clean_v2.jsonl")
     parser.add_argument("--output", default="evaluation/reports/faq_generation_metrics.json")
     parser.add_argument("--per-sample-output", default="evaluation/reports/faq_generation_per_sample.jsonl")
     parser.add_argument("--limit", type=int, default=100)

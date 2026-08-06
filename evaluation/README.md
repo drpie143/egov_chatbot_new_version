@@ -51,7 +51,7 @@ python evaluation/clean_dvc_faq_testset.py \
 ```bash
 python evaluation/export_faq_eval_testset.py \
     --input evaluation/testsets/dvc_faq_clean_full.jsonl \
-    --output evaluation/testsets/dvc_faq_qa_500.jsonl \
+    --output evaluation/testsets/dvc_faq_clean_v2.jsonl \
     --limit 500 --seed 42
 ```
 
@@ -59,7 +59,7 @@ python evaluation/export_faq_eval_testset.py \
 
 ```bash
 python evaluation/validate_faq_testset.py \
-    --testset evaluation/testsets/dvc_faq_qa_500.jsonl
+    --testset evaluation/testsets/dvc_faq_clean_v2.jsonl
 ```
 
 ### 5. Run all benchmarks
@@ -67,7 +67,7 @@ python evaluation/validate_faq_testset.py \
 ```bash
 # Requires API server running in another terminal: python scripts/run_dev.py
 python evaluation/run_faq_benchmark.py \
-    --testset evaluation/testsets/dvc_faq_qa_500.jsonl \
+    --testset evaluation/testsets/dvc_faq_clean_v2.jsonl \
     --base-url http://localhost:7860 \
     --generation-limit 50
 ```

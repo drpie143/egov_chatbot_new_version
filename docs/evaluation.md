@@ -50,7 +50,7 @@ Measures end-to-end `/chat` API response time across the full testset with warm-
 ```bash
 # Full pipeline (requires running API server in another terminal)
 python evaluation/run_faq_benchmark.py \
-    --testset evaluation/testsets/dvc_faq_qa_500.jsonl \
+    --testset evaluation/testsets/dvc_faq_clean_v2.jsonl \
     --base-url http://localhost:7860 \
     --generation-limit 50
 

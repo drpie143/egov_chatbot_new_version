@@ -2,7 +2,7 @@
 
 Usage:
     python evaluation/validate_faq_testset.py \
-        --testset evaluation/testsets/dvc_faq_qa_500.jsonl
+        --testset evaluation/testsets/dvc_faq_clean_v2.jsonl
 """
 
 from __future__ import annotations

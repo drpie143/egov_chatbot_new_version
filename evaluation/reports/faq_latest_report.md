@@ -1,5 +1,20 @@
 # eGov-Bot FAQ Benchmark Report
 
+> **SUPERSEDED — do not cite these numbers.**
+>
+> This report was generated from a 74-question test set that a broken cleaning
+> step produced: `rapidfuzz` was missing from the environment, the resulting
+> ImportError was swallowed, and every question whose title was not a verbatim
+> corpus match was dropped. What remained were the questions BM25 finds
+> easiest, which inflated all retrieval metrics.
+>
+> It also predates the shared BM25 tokenizer, so its BM25 and Hybrid rows come
+> from an index whose vocabulary carried attached punctuation on 78.9% of terms.
+>
+> Current results, on 167 questions with confidence intervals, are in the
+> project README. Regenerate with
+> `evaluation/testsets/dvc_faq_clean_v2.jsonl`.
+
 Generated: 2026-05-17T00:16:37
 
 ## 1. Testset

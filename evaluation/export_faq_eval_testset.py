@@ -3,7 +3,7 @@
 Usage:
     python evaluation/export_faq_eval_testset.py \
         --input evaluation/testsets/dvc_faq_clean_full.jsonl \
-        --output evaluation/testsets/dvc_faq_qa_500.jsonl \
+        --output evaluation/testsets/dvc_faq_qa_74.jsonl \
         --limit 500 \
         --seed 42
 """
