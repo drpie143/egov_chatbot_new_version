@@ -146,13 +146,15 @@ def main() -> None:
         "latency": read_json(REPORT_DIR / "faq_latency_metrics.json"),
         "steps": [{k: v for k, v in s.items() if k != "output"} for s in steps],
     }
-    (REPORT_DIR / "faq_latest_metrics.json").write_text(
+    # Generated output goes to its own names. The faq_*_74q_superseded.* pair is
+    # kept as provenance for the numbers this project used to publish and must
+    # not be overwritten by a new run.
+    (REPORT_DIR / "faq_metrics.json").write_text(
         json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    # Step 9: Write latest_report.md
     report_lines = _generate_report(latest, retrieval_results)
-    (REPORT_DIR / "faq_latest_report.md").write_text("\n".join(report_lines), encoding="utf-8")
+    (REPORT_DIR / "faq_report.md").write_text("\n".join(report_lines), encoding="utf-8")
 
     print("\n" + "=" * 60)
     print("Benchmark Complete")

@@ -1,0 +1,89 @@
+{
+  "testset": "evaluation/testsets/dvc_faq_clean_v2.jsonl",
+  "questions": 167,
+  "config": {
+    "group_by_procedure": true,
+    "group_key": "parent",
+    "group_candidate_multiplier": 8,
+    "strip_query_boilerplate": true,
+    "rerank_enabled": false,
+    "k": 10
+  },
+  "note": "These modes are NOT ranked. A paired bootstrap over 10,000 resamples puts the 95% CI of every quality difference between bm25, dense and hybrid across zero at this sample size. Reproduce with evaluation/compare_runs.py.",
+  "retrieval": {
+    "bm25": {
+      "recall@1": 0.7545,
+      "recall@3": 0.7605,
+      "recall@5": 0.8503,
+      "recall@10": 0.9222,
+      "mrr@10": 0.7853,
+      "ndcg@10": 0.8165,
+      "latency_p50_ms": 60.4
+    },
+    "dense": {
+      "recall@1": 0.7066,
+      "recall@3": 0.7545,
+      "recall@5": 0.8503,
+      "recall@10": 0.9162,
+      "mrr@10": 0.7564,
+      "ndcg@10": 0.7939,
+      "latency_p50_ms": 136.5
+    },
+    "hybrid": {
+      "fusion": "legacy",
+      "recall@1": 0.6826,
+      "recall@3": 0.7665,
+      "recall@5": 0.7904,
+      "recall@10": 0.8443,
+      "mrr@10": 0.7328,
+      "ndcg@10": 0.7593,
+      "latency_p50_ms": 224.1
+    }
+  },
+  "significant_changes": [
+    {
+      "change": "parent-document grouping",
+      "metric": "recall@10",
+      "delta": 0.0599,
+      "ci95": [0.0299, 0.0958]
+    },
+    {
+      "change": "parent-document grouping",
+      "metric": "ndcg@10",
+      "delta": 0.0255,
+      "ci95": [0.0133, 0.0392]
+    },
+    {
+      "change": "query boilerplate stripping",
+      "metric": "ndcg@10",
+      "delta": 0.0147,
+      "ci95": [0.0034, 0.0292]
+    },
+    {
+      "change": "bm25 vs hybrid, paraphrased queries only (n=64)",
+      "metric": "recall@1",
+      "delta": 0.1719,
+      "ci95": [0.0469, 0.2969]
+    }
+  ],
+  "rejected": {
+    "cross_encoder_rerank": {
+      "model": "AITeamVN/Vietnamese_Reranker",
+      "shortlist": 20,
+      "recall@1": 0.5269,
+      "recall@10": 0.8683,
+      "mrr@10": 0.6181,
+      "ndcg@10": 0.6767,
+      "latency_p50_ms": 6812.3,
+      "why": "Recall@10 rises while Recall@1 collapses. The demoted cases are procedures whose titles differ only by a qualifier (loai I / II / III, province suffix), which a general-purpose Vietnamese cross-encoder reads as equally relevant. Reranking before grouping instead of after does not help."
+    }
+  },
+  "limits": {
+    "lexical_bias": "41.3% of questions quote the target procedure title verbatim. Recall@1 is ~0.80 on those and ~0.62 on paraphrased ones.",
+    "unreachable": "Recall saturates by depth 50 (recall@50 == recall@100 == 0.9162), so 8.4% of questions never retrieve the correct procedure at any depth."
+  },
+  "sparse_latency_before_after": {
+    "before": { "backend": "rank_bm25", "p50_ms": 1919.7, "p95_ms": 4965.4 },
+    "after": { "backend": "bm25s", "p50_ms": 60.4, "p95_ms": 109.2 }
+  }
+}

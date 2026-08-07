@@ -18,8 +18,10 @@ evaluation/reports/*.csv
 evaluation/reports/*.md
 evaluation/reports/*.jsonl
 !evaluation/reports/.gitkeep
-!evaluation/reports/faq_latest_report.md
-!evaluation/reports/faq_latest_metrics.json
+# Current results, and the superseded pair kept for provenance.
+!evaluation/reports/retrieval_metrics_167q.json
+!evaluation/reports/faq_report_74q_superseded.md
+!evaluation/reports/faq_metrics_74q_superseded.json
 
 evaluation/testsets/*.jsonl
 evaluation/testsets/*.csv
