@@ -2,7 +2,7 @@
 
 Usage:
     python evaluation/run_faq_benchmark.py \
-        --testset evaluation/testsets/dvc_faq_qa_500.jsonl \
+        --testset evaluation/testsets/dvc_faq_clean_v2.jsonl \
         --base-url http://localhost:7860 \
         --generation-limit 100
 """
@@ -54,7 +54,7 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="Run the full FAQ benchmark pipeline.")
-    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_qa_500.jsonl")
+    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_clean_v2.jsonl")
     parser.add_argument("--base-url", default="http://localhost:7860")
     parser.add_argument("--generation-limit", type=int, default=100)
     parser.add_argument("--skip-retrieval", action="store_true", help="Skip retrieval evaluation.")

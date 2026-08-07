@@ -5,7 +5,7 @@ Measures end-to-end API latency percentiles across FAQ test questions.
 Usage:
     python evaluation/eval_latency_dataset.py \
         --base-url http://localhost:7860 \
-        --testset evaluation/testsets/dvc_faq_qa_500.jsonl \
+        --testset evaluation/testsets/dvc_faq_clean_v2.jsonl \
         --output evaluation/reports/faq_latency_metrics.json \
         --limit 100
 """
@@ -29,7 +29,7 @@ from evaluation.utils.jsonl_io import read_jsonl, write_json  # noqa: E402
 def main() -> None:
     parser = argparse.ArgumentParser(description="Latency benchmark on FAQ testset.")
     parser.add_argument("--base-url", default="http://localhost:7860")
-    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_qa_500.jsonl")
+    parser.add_argument("--testset", default="evaluation/testsets/dvc_faq_clean_v2.jsonl")
     parser.add_argument("--output", default="evaluation/reports/faq_latency_metrics.json")
     parser.add_argument("--limit", type=int, default=100)
     parser.add_argument("--warm-up", type=int, default=2, help="Number of warm-up requests before measuring.")

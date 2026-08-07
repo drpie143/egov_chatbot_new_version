@@ -24,7 +24,11 @@ evaluation/reports/*.jsonl
 evaluation/testsets/*.jsonl
 evaluation/testsets/*.csv
 !evaluation/testsets/.gitkeep
-!evaluation/testsets/dvc_faq_qa_500.jsonl
+# The benchmark is only reproducible if its inputs ship with the code.
+# raw -> clean_v2 is the current pipeline; qa_74 reproduces the old reports.
+!evaluation/testsets/dvc_faq_raw.jsonl
+!evaluation/testsets/dvc_faq_clean_v2.jsonl
+!evaluation/testsets/dvc_faq_qa_74.jsonl
 
 static/data/toan_bo_du_lieu_final.json
 
