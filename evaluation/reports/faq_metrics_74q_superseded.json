@@ -1,4 +1,7 @@
 {
+  "SUPERSEDED": true,
+  "why": "Produced from a 74-question set that a broken cleaning step created: rapidfuzz was missing, the ImportError was swallowed, and every question whose title was not a verbatim corpus match was dropped. Also predates the shared BM25 tokenizer. Kept for provenance only.",
+  "current": "evaluation/reports/retrieval_metrics_167q.json",
   "timestamp": "2026-05-17T00:16:37.653277",
   "testset": "evaluation/testsets/dvc_faq_qa_500.jsonl",
   "retrieval": {

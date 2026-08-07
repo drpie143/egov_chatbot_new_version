@@ -30,11 +30,29 @@ Measures end-to-end `/chat` API response time across the full testset with warm-
 
 ### Retrieval Ablation
 
-| Method | Recall@1 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 |
-|--------|----------|----------|-----------|--------|---------|
-| BM25   | 0.7432   | 0.9054   | 0.9324    | 0.8220 | 0.8496  |
-| Dense  | 0.8514   | 0.9324   | 0.9324    | 0.8829 | 0.8953  |
-| Hybrid | 0.8514   | 0.9324   | 0.9459    | 0.8820 | 0.8975  |
+167 questions (`dvc_faq_clean_v2.jsonl`), parent-document grouping and query
+boilerplate stripping enabled.
+
+| Method | Recall@1 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 | p50 |
+|--------|---------:|---------:|----------:|-------:|--------:|----:|
+| BM25   | 0.7545 | 0.8503 | 0.9222 | 0.7853 | 0.8165 | 60 ms |
+| Dense  | 0.7066 | 0.8503 | 0.9162 | 0.7564 | 0.7939 | 137 ms |
+| Hybrid | 0.6826 | 0.7904 | 0.8443 | 0.7328 | 0.7593 | 224 ms |
+
+**This table is not a ranking.** A paired bootstrap over 10,000 resamples puts
+the 95% CI of every quality difference between these modes across zero. Verify
+with `evaluation/compare_runs.py`, and see the project README for the
+differences that do survive the test.
+
+### Retrieval latency (sparse path)
+
+| | Before | After |
+|---|---:|---:|
+| p50 | 1,920 ms | 60 ms |
+| p95 | 4,965 ms | 109 ms |
+
+Measured before and after unifying the BM25 tokenizer and moving from
+`rank_bm25` to `bm25s`.
 
 ### End-to-End Latency
 
@@ -43,7 +61,10 @@ Measures end-to-end `/chat` API response time across the full testset with warm-
 | p50 | 4,819 ms |
 | p95 | 11,881 ms |
 
-> Full report: `evaluation/reports/faq_latest_report.md`
+> These end-to-end figures predate the retrieval work above and are dominated by
+> Gemini generation. Re-measure with `evaluation/eval_latency_dataset.py`.
+
+> Superseded report, kept for provenance: `evaluation/reports/faq_report_74q_superseded.md`
 
 ## Running Benchmarks
 
