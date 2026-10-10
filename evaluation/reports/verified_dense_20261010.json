@@ -1,0 +1,20 @@
+{
+  "mode": "dense",
+  "k": 10,
+  "count": 167,
+  "recall@1": 0.7066,
+  "recall@3": 0.7545,
+  "recall@5": 0.8503,
+  "recall@10": 0.9162,
+  "mrr@10": 0.7564,
+  "ndcg@10": 0.7939,
+  "latency_p50_ms": 127.9,
+  "latency_p95_ms": 187.8,
+  "testset": "evaluation/testsets/dvc_faq_clean_v2.jsonl",
+  "config": {
+    "group_by_procedure": true,
+    "group_key": "parent",
+    "strip_query_boilerplate": true,
+    "rerank_enabled": false
+  }
+}

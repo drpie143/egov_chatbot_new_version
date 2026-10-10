@@ -156,7 +156,8 @@ def main() -> None:
     load_dotenv(ROOT / ".env")
     settings = load_settings()
     print("Loading resources...")
-    resources = load_resources(settings, load_models=True)
+    # Sparse-only evaluation does not need to load/download the dense model.
+    resources = load_resources(settings, load_models=args.mode != "bm25")
     retriever = HybridRetriever(
         settings,
         resources.procedure_store,
@@ -166,12 +167,24 @@ def main() -> None:
         embedding_model=resources.embedding_model,
     )
 
+    if args.mode in {"dense", "hybrid"} and not retriever.has_vector_index:
+        raise SystemExit("Dense index/model missing: refusing to label fallback retrieval as a dense/hybrid benchmark.")
+    if args.mode in {"bm25", "hybrid"} and retriever.bm25 is None:
+        raise SystemExit("BM25 index missing: refusing to label fallback retrieval as a BM25/hybrid benchmark.")
+
     samples = read_jsonl(args.testset)
     print(f"Loaded {len(samples)} test samples.")
     print(f"Mode: {args.mode}, k: {args.k}")
     print()
 
     metrics, per_sample = evaluate(samples, retriever, args.k, args.mode)
+    metrics["testset"] = args.testset
+    metrics["config"] = {
+        "group_by_procedure": settings.group_by_procedure,
+        "group_key": settings.group_key,
+        "strip_query_boilerplate": settings.strip_query_boilerplate,
+        "rerank_enabled": settings.rerank_enabled,
+    }
     if args.mode == "hybrid":
         metrics["fusion"] = settings.fusion_strategy
 

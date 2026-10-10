@@ -20,6 +20,8 @@ evaluation/reports/*.jsonl
 !evaluation/reports/.gitkeep
 # Current results, and the superseded pair kept for provenance.
 !evaluation/reports/retrieval_metrics_167q.json
+!evaluation/reports/verified_*_20261010.json
+!evaluation/reports/verified_*_20261010_per_sample.jsonl
 !evaluation/reports/faq_report_74q_superseded.md
 !evaluation/reports/faq_metrics_74q_superseded.json
 
