@@ -33,6 +33,25 @@ def load_ranks(path: Path) -> list[int | None]:
     return ranks
 
 
+def load_paired_ranks(baseline_path: Path, candidate_path: Path) -> tuple[list, list]:
+    def read(path):
+        with path.open(encoding="utf-8") as file:
+            return [json.loads(line) for line in file if line.strip()]
+
+    baseline, candidate = read(baseline_path), read(candidate_path)
+    if len(baseline) != len(candidate):
+        raise ValueError(f"Runs cover different question counts: {len(baseline)} vs {len(candidate)}")
+    for index, (left, right) in enumerate(zip(baseline, candidate, strict=True), 1):
+        for field in ("question", "expected_procedure_title"):
+            if not left.get(field) or left.get(field) != right.get(field):
+                raise ValueError(f"Runs are not paired at row {index}: {field} differs or is missing")
+        for row in (left, right):
+            rank = row.get("rank")
+            if "rank" not in row or (rank is not None and (type(rank) is not int or rank < 1)):
+                raise ValueError(f"Invalid retrieval rank at row {index}: {rank!r}")
+    return [row.get("rank") for row in baseline], [row.get("rank") for row in candidate]
+
+
 def per_sample_metric(rank: int | None, metric: str, k: int = 10) -> float:
     if rank is None or rank > k:
         return 0.0
@@ -87,12 +106,12 @@ def main() -> None:
     parser.add_argument("--coverage-at-least", type=float, default=None)
     args = parser.parse_args()
 
-    base_ranks = load_ranks(Path(args.baseline))
-    cand_ranks = load_ranks(Path(args.candidate))
-    if len(base_ranks) != len(cand_ranks):
-        raise SystemExit(
-            f"Runs cover different question counts: {len(base_ranks)} vs {len(cand_ranks)}"
-        )
+    if args.rounds < 100:
+        raise SystemExit("--rounds must be at least 100")
+    try:
+        base_ranks, cand_ranks = load_paired_ranks(Path(args.baseline), Path(args.candidate))
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
     if args.coverage_below is not None or args.coverage_at_least is not None:
         if not args.testset:

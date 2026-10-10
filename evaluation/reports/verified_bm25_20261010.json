@@ -1,0 +1,20 @@
+{
+  "mode": "bm25",
+  "k": 10,
+  "count": 167,
+  "recall@1": 0.7545,
+  "recall@3": 0.7605,
+  "recall@5": 0.8503,
+  "recall@10": 0.9222,
+  "mrr@10": 0.7853,
+  "ndcg@10": 0.8165,
+  "latency_p50_ms": 51.6,
+  "latency_p95_ms": 118.0,
+  "testset": "evaluation/testsets/dvc_faq_clean_v2.jsonl",
+  "config": {
+    "group_by_procedure": true,
+    "group_key": "parent",
+    "strip_query_boilerplate": true,
+    "rerank_enabled": false
+  }
+}

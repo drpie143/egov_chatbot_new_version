@@ -21,22 +21,28 @@ pipeline, so the numbers below do not describe it.
 
 ## Retrieval results
 
-Evaluated on **167** FAQ questions from the National Public Service Portal
-(`evaluation/testsets/dvc_faq_clean_v2.jsonl`), with parent-document grouping
-and query boilerplate stripping enabled:
+Rerun on **10 October 2026** using **167** FAQ questions from the National
+Public Service Portal (`evaluation/testsets/dvc_faq_clean_v2.jsonl`). All three
+runs use parent-document grouping and query boilerplate stripping; hybrid
+uses **RRF**. Latency measures local retrieval after resource initialization,
+including the first query; it excludes generation and network requests.
 
 | Method | Recall@1 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 | p50 |
 |--------|---------:|---------:|----------:|-------:|--------:|----:|
-| BM25   | 0.7545 | 0.8503 | 0.9222 | 0.7853 | 0.8165 | 60 ms |
-| Dense  | 0.7066 | 0.8503 | 0.9162 | 0.7564 | 0.7939 | 137 ms |
-| Hybrid | 0.6826 | 0.7904 | 0.8443 | 0.7328 | 0.7593 | 224 ms |
+| BM25   | 0.7545 | 0.8503 | 0.9222 | 0.7853 | 0.8165 | 51.6 ms |
+| Dense  | 0.7066 | 0.8503 | 0.9162 | 0.7564 | 0.7939 | 127.9 ms |
+| Hybrid RRF | 0.7066 | 0.8862 | 0.9341 | 0.7639 | 0.8041 | 194.6 ms |
 
-**Read these as indistinguishable, not as a ranking.** A paired bootstrap over
-10,000 resamples puts the 95% CI of every BM25-vs-Dense and BM25-vs-Hybrid
-quality difference across zero at this sample size. Reproduce with
-`evaluation/compare_runs.py`.
+Paired bootstrap over 10,000 resamples (seed 13) includes zero for all six
+BM25-vs-Dense and BM25-vs-Hybrid RRF quality differences. This set does not
+establish a quality winner or equivalence. The earlier hybrid row (0.8443
+Recall@10) used legacy fusion without matching grouping and was not a fair
+comparison with the final BM25 row. Current metrics, configurations and
+confidence intervals are in
+[`retrieval_metrics_167q.json`](evaluation/reports/retrieval_metrics_167q.json).
 
-The differences that *do* survive the bootstrap:
+Historical optimization runs reported the following effects (separate from
+the matched comparison above):
 
 | Change | Effect | 95% CI |
 |---|---|---|
@@ -58,11 +64,11 @@ The differences that *do* survive the bootstrap:
 Reranking before grouping instead of after does not help (Recall@1 0.16 vs
 0.20 on a 25-question probe), so the ordering is not the cause.
 
-The failure is systematic: Recall@10 *rises* while Recall@1 collapses, and the
-demoted cases are procedures whose titles differ only by a qualifier — `loại I`
-vs `loại II` vs `loại III`, or a province suffix. A cross-encoder trained on
-general Vietnamese text reads those variants as equally relevant and orders
-them near-arbitrarily, while BM25 separates them on exactly those tokens.
+Compared with the final grouped BM25 configuration, reranking reduced both
+Recall@1 and Recall@10. Demoted examples include procedure titles differing
+only by a qualifier such as `loại I`, `loại II`, `loại III`, or a province
+suffix. Confusion between these variants is a possible explanation, rather
+than a demonstrated property of every Vietnamese cross-encoder.
 
 At 6.8s per query on CPU it is also unusable on free-tier hosting. The stage is
 kept behind `RERANK_ENABLED=false` with a configurable model, so a
@@ -70,10 +76,10 @@ domain-adapted reranker can be retried on a GPU.
 
 ### What limits this system
 
-Recall saturates by depth 50 (`Recall@50 = Recall@100 = 0.9162`), so **8.4% of
-questions never retrieve the correct procedure at any depth**. Reranking cannot
-recover those; only better candidate generation can. Run
-`evaluation/diagnose_retrieval_ceiling.py` to reproduce.
+An older **ungrouped BM25** probe saturated by depth 50
+(`Recall@50 = Recall@100 = 0.9162`). This is not the ceiling of the current
+grouped retriever, which already reaches Recall@10 = 0.9222. A fresh depth
+probe is needed before claiming how many questions are unreachable.
 
 The benchmark is also lexically biased: **41.3% of its questions quote the
 target procedure's title verbatim**, because the questions come from a portal
@@ -329,13 +335,13 @@ python evaluation/eval_latency_dataset.py --base-url http://localhost:7860 --lim
 
 - **The benchmark rewards literal matching.** 41.3% of its questions quote the
   target title verbatim. Numbers on the paraphrased slice are the honest ones.
-- **8.4% of questions are unreachable** by this retriever at any depth. That is
-  a candidate-generation problem; reranking cannot address it.
-- **Retrieval modes are statistically indistinguishable** at n=167. Do not read
-  the results table as a ranking.
+- **The depth ceiling has not been reverified** for the final grouped retriever.
+- **Matched mode comparisons include zero in their quality-difference CIs** at
+  n=167; this does not establish equivalence or a quality winner.
 - Data may not reflect real-time changes from official portals.
 - The assistant is not a substitute for official legal or administrative guidance.
 - First startup can be slow (~2-5 min) due to model and index downloads.
-- Free-tier Gemini API has strict rate limits (20 req/day for 2.5-flash; use 1.5-flash for benchmarking).
+- Provider quotas depend on the account and model; verify available quota before
+  running generation benchmarks.
 - The hosted demo runs a different, dense-only architecture. See the table at
   the top.

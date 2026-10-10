@@ -9,35 +9,68 @@
     "rerank_enabled": false,
     "k": 10
   },
-  "note": "These modes are NOT ranked. A paired bootstrap over 10,000 resamples puts the 95% CI of every quality difference between bm25, dense and hybrid across zero at this sample size. Reproduce with evaluation/compare_runs.py.",
+  "note": "BM25, dense, and hybrid RRF were rerun on the same 167 questions with parent grouping and boilerplate stripping. Paired bootstrap (10,000 resamples, seed=13) for BM25 vs dense and BM25 vs hybrid RRF includes zero for all six metrics. This does not establish equivalence. The previous hybrid row used legacy fusion without matching grouping and was not comparable to the final BM25 row.",
   "retrieval": {
     "bm25": {
+      "mode": "bm25",
+      "k": 10,
+      "count": 167,
       "recall@1": 0.7545,
       "recall@3": 0.7605,
       "recall@5": 0.8503,
       "recall@10": 0.9222,
       "mrr@10": 0.7853,
       "ndcg@10": 0.8165,
-      "latency_p50_ms": 60.4
+      "latency_p50_ms": 51.6,
+      "latency_p95_ms": 118.0,
+      "testset": "evaluation/testsets/dvc_faq_clean_v2.jsonl",
+      "config": {
+        "group_by_procedure": true,
+        "group_key": "parent",
+        "strip_query_boilerplate": true,
+        "rerank_enabled": false
+      }
     },
     "dense": {
+      "mode": "dense",
+      "k": 10,
+      "count": 167,
       "recall@1": 0.7066,
       "recall@3": 0.7545,
       "recall@5": 0.8503,
       "recall@10": 0.9162,
       "mrr@10": 0.7564,
       "ndcg@10": 0.7939,
-      "latency_p50_ms": 136.5
+      "latency_p50_ms": 127.9,
+      "latency_p95_ms": 187.8,
+      "testset": "evaluation/testsets/dvc_faq_clean_v2.jsonl",
+      "config": {
+        "group_by_procedure": true,
+        "group_key": "parent",
+        "strip_query_boilerplate": true,
+        "rerank_enabled": false
+      }
     },
     "hybrid": {
-      "fusion": "legacy",
-      "recall@1": 0.6826,
-      "recall@3": 0.7665,
-      "recall@5": 0.7904,
-      "recall@10": 0.8443,
-      "mrr@10": 0.7328,
-      "ndcg@10": 0.7593,
-      "latency_p50_ms": 224.1
+      "mode": "hybrid",
+      "k": 10,
+      "count": 167,
+      "recall@1": 0.7066,
+      "recall@3": 0.7605,
+      "recall@5": 0.8862,
+      "recall@10": 0.9341,
+      "mrr@10": 0.7639,
+      "ndcg@10": 0.8041,
+      "latency_p50_ms": 194.6,
+      "latency_p95_ms": 342.5,
+      "testset": "evaluation/testsets/dvc_faq_clean_v2.jsonl",
+      "config": {
+        "group_by_procedure": true,
+        "group_key": "parent",
+        "strip_query_boilerplate": true,
+        "rerank_enabled": false
+      },
+      "fusion": "rrf"
     }
   },
   "significant_changes": [
@@ -45,25 +78,37 @@
       "change": "parent-document grouping",
       "metric": "recall@10",
       "delta": 0.0599,
-      "ci95": [0.0299, 0.0958]
+      "ci95": [
+        0.0299,
+        0.0958
+      ]
     },
     {
       "change": "parent-document grouping",
       "metric": "ndcg@10",
       "delta": 0.0255,
-      "ci95": [0.0133, 0.0392]
+      "ci95": [
+        0.0133,
+        0.0392
+      ]
     },
     {
       "change": "query boilerplate stripping",
       "metric": "ndcg@10",
       "delta": 0.0147,
-      "ci95": [0.0034, 0.0292]
+      "ci95": [
+        0.0034,
+        0.0292
+      ]
     },
     {
       "change": "bm25 vs hybrid, paraphrased queries only (n=64)",
       "metric": "recall@1",
       "delta": 0.1719,
-      "ci95": [0.0469, 0.2969]
+      "ci95": [
+        0.0469,
+        0.2969
+      ]
     }
   ],
   "rejected": {
@@ -80,10 +125,155 @@
   },
   "limits": {
     "lexical_bias": "41.3% of questions quote the target procedure title verbatim. Recall@1 is ~0.80 on those and ~0.62 on paraphrased ones.",
-    "unreachable": "Recall saturates by depth 50 (recall@50 == recall@100 == 0.9162), so 8.4% of questions never retrieve the correct procedure at any depth."
+    "unreachable": "Historical ungrouped BM25 run v2_ceiling_bm25 had Recall@50=Recall@100=0.9162. This is not a ceiling for the current grouped configuration, which already reaches Recall@10=0.9222."
   },
   "sparse_latency_before_after": {
-    "before": { "backend": "rank_bm25", "p50_ms": 1919.7, "p95_ms": 4965.4 },
-    "after": { "backend": "bm25s", "p50_ms": 60.4, "p95_ms": 109.2 }
+    "before": {
+      "backend": "rank_bm25",
+      "p50_ms": 1919.7,
+      "p95_ms": 4965.4
+    },
+    "after": {
+      "backend": "bm25s",
+      "p50_ms": 60.4,
+      "p95_ms": 109.2
+    },
+    "note": "Historical comparison from different runs; the freshly verified grouped BM25 retrieval p50 is 51.6 ms. Timing is hardware- and workload-dependent."
+  },
+  "verified_date": "2026-10-10",
+  "testset_sha256": "719501f5916f5cc0b58c8969248aa2ef2433c8057fd22ea8d8f1a2f3636f1bba",
+  "measurement_environment": {
+    "platform": "Windows-11-10.0.26300-SP0",
+    "python": "3.14.2",
+    "latency_scope": "retrieval only; sequential queries after resource initialization; includes first query; excludes generation and network",
+    "provider_calls": false
+  },
+  "paired_comparisons": {
+    "dense": {
+      "baseline": "evaluation/reports/verified_bm25_20261010_per_sample.jsonl",
+      "candidate": "evaluation/reports/verified_dense_20261010_per_sample.jsonl",
+      "questions": 167,
+      "bootstrap_rounds": 10000,
+      "seed": 13,
+      "results": [
+        {
+          "metric": "recall@1",
+          "baseline": 0.7545,
+          "candidate": 0.7066,
+          "delta": -0.0479,
+          "ci_low": -0.1078,
+          "ci_high": 0.012,
+          "significant": false
+        },
+        {
+          "metric": "recall@3",
+          "baseline": 0.7605,
+          "candidate": 0.7545,
+          "delta": -0.006,
+          "ci_low": -0.0599,
+          "ci_high": 0.0539,
+          "significant": false
+        },
+        {
+          "metric": "recall@5",
+          "baseline": 0.8503,
+          "candidate": 0.8503,
+          "delta": 0.0,
+          "ci_low": -0.0539,
+          "ci_high": 0.0539,
+          "significant": false
+        },
+        {
+          "metric": "recall@10",
+          "baseline": 0.9222,
+          "candidate": 0.9162,
+          "delta": -0.006,
+          "ci_low": -0.0299,
+          "ci_high": 0.018,
+          "significant": false
+        },
+        {
+          "metric": "mrr@10",
+          "baseline": 0.7853,
+          "candidate": 0.7564,
+          "delta": -0.0288,
+          "ci_low": -0.076,
+          "ci_high": 0.0191,
+          "significant": false
+        },
+        {
+          "metric": "ndcg@10",
+          "baseline": 0.8165,
+          "candidate": 0.7939,
+          "delta": -0.0226,
+          "ci_low": -0.0608,
+          "ci_high": 0.0165,
+          "significant": false
+        }
+      ]
+    },
+    "hybrid_rrf": {
+      "baseline": "evaluation/reports/verified_bm25_20261010_per_sample.jsonl",
+      "candidate": "evaluation/reports/verified_hybrid_rrf_20261010_per_sample.jsonl",
+      "questions": 167,
+      "bootstrap_rounds": 10000,
+      "seed": 13,
+      "results": [
+        {
+          "metric": "recall@1",
+          "baseline": 0.7545,
+          "candidate": 0.7066,
+          "delta": -0.0479,
+          "ci_low": -0.1018,
+          "ci_high": 0.006,
+          "significant": false
+        },
+        {
+          "metric": "recall@3",
+          "baseline": 0.7605,
+          "candidate": 0.7605,
+          "delta": 0.0,
+          "ci_low": -0.0479,
+          "ci_high": 0.0479,
+          "significant": false
+        },
+        {
+          "metric": "recall@5",
+          "baseline": 0.8503,
+          "candidate": 0.8862,
+          "delta": 0.0359,
+          "ci_low": -0.012,
+          "ci_high": 0.0838,
+          "significant": false
+        },
+        {
+          "metric": "recall@10",
+          "baseline": 0.9222,
+          "candidate": 0.9341,
+          "delta": 0.012,
+          "ci_low": 0.0,
+          "ci_high": 0.0299,
+          "significant": false
+        },
+        {
+          "metric": "mrr@10",
+          "baseline": 0.7853,
+          "candidate": 0.7639,
+          "delta": -0.0214,
+          "ci_low": -0.0634,
+          "ci_high": 0.0203,
+          "significant": false
+        },
+        {
+          "metric": "ndcg@10",
+          "baseline": 0.8165,
+          "candidate": 0.8041,
+          "delta": -0.0124,
+          "ci_low": -0.045,
+          "ci_high": 0.0201,
+          "significant": false
+        }
+      ]
+    }
   }
 }

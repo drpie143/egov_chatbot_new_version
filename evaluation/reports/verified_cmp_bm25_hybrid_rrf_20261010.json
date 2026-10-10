@@ -1,0 +1,63 @@
+{
+  "baseline": "evaluation/reports/verified_bm25_20261010_per_sample.jsonl",
+  "candidate": "evaluation/reports/verified_hybrid_rrf_20261010_per_sample.jsonl",
+  "questions": 167,
+  "bootstrap_rounds": 10000,
+  "seed": 13,
+  "results": [
+    {
+      "metric": "recall@1",
+      "baseline": 0.7545,
+      "candidate": 0.7066,
+      "delta": -0.0479,
+      "ci_low": -0.1018,
+      "ci_high": 0.006,
+      "significant": false
+    },
+    {
+      "metric": "recall@3",
+      "baseline": 0.7605,
+      "candidate": 0.7605,
+      "delta": 0.0,
+      "ci_low": -0.0479,
+      "ci_high": 0.0479,
+      "significant": false
+    },
+    {
+      "metric": "recall@5",
+      "baseline": 0.8503,
+      "candidate": 0.8862,
+      "delta": 0.0359,
+      "ci_low": -0.012,
+      "ci_high": 0.0838,
+      "significant": false
+    },
+    {
+      "metric": "recall@10",
+      "baseline": 0.9222,
+      "candidate": 0.9341,
+      "delta": 0.012,
+      "ci_low": 0.0,
+      "ci_high": 0.0299,
+      "significant": false
+    },
+    {
+      "metric": "mrr@10",
+      "baseline": 0.7853,
+      "candidate": 0.7639,
+      "delta": -0.0214,
+      "ci_low": -0.0634,
+      "ci_high": 0.0203,
+      "significant": false
+    },
+    {
+      "metric": "ndcg@10",
+      "baseline": 0.8165,
+      "candidate": 0.8041,
+      "delta": -0.0124,
+      "ci_low": -0.045,
+      "ci_high": 0.0201,
+      "significant": false
+    }
+  ]
+}
